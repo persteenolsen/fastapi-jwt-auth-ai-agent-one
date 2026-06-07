@@ -10,7 +10,7 @@ This project demonstrates how to build a tool-using AI agent that can reason, ta
 
 - Version: 0.0.2  
 - Python: 3.12  
-- Last Updated: 07-06-2026  
+- Last Updated 07-06-2026  
 
 ---
 
