@@ -155,13 +155,46 @@ Verbose logging enabled
 
 ---
 
-## 💬 Example Request
+## 💬 Example Request / Response
 
 POST /chat
+
+## Request (Will most likely just use LLM)
+
+{
+  "message": "Tell me a joke"
+}
+
+## Response
+
+{
+  "response": "Why don't scientists trust atoms? Because they make up everything."
+}
+
+## Request (Will most likely just use LLM)
 
 {
   "message": "What is the capital of France?"
 }
+
+## Response
+
+{
+  "response": "Paris"
+}
+
+## Request (Will most likely try to use the Wikipedia Tool)
+
+{
+  "message": "What is Python?"
+}
+
+## Response
+
+{
+  "response": "Python is a high-level, interpreted programming language widely used for web development, scientific computing, and data analysis."
+}
+
 
 ---
 
