@@ -1,0 +1,16 @@
+langchain==0.2.0
+langchain-core==0.2.39
+langchain-community==0.2.0
+langchain-groq==0.1.10
+
+fastapi==0.111.1
+uvicorn==0.23.2
+
+python-dotenv==1.0.1
+PyJWT==2.9.0
+wikipedia==1.4.0
+requests==2.31.0
+urllib3==2.2.2
+certifi==2024.6.2
+setuptools==70.0.0
+wheel==0.43.0
