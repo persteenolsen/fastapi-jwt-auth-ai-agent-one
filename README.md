@@ -1,6 +1,5 @@
-# 🚀 Python + FastAPI + JWT Auth + LangChain + ReAct AI Agent
+# 🚀 FastAPI with JWT Auth serving a LangChain ReAct AI Agent
  
-
 A production-style AI Agent API built with **FastAPI**, featuring **JWT authentication**, **Groq-powered LLMs**, and a **LangChain ReAct agent** with tool usage (Wikipedia).
 
 This project demonstrates how to build a tool-using AI system that can:
