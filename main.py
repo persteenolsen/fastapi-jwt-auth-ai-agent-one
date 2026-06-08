@@ -3,8 +3,8 @@ from routes import router
 from config import logger
 
 app = FastAPI(
-    title="AI Agent API (Groq + JWT + Safe Wikipedia + ReAct)",
-    description="08-06-2026 - Secure AI agent API using FastAPI, JWT auth, Groq LLM, and a safe Wikipedia tool. Designed to prevent infinite loops and ensure reliability on Vercel.",
+    title="FastAPI + JWT Auth + LangChain ReAct AI Agent",
+    description="2026-06-08 - FastAPI AI agent with JWT authentication, built using LangChain and Groq LLM. Includes a Wikipedia tool for factual queries and supports intelligent tool-augmented responses",
     version="0.0.3", 
     contact={
         "name": "Per Olsen",
