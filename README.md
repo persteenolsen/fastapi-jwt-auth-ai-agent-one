@@ -1,57 +1,68 @@
-# Python + FastAPI + JWT Auth + AI Agent + Groq + LLM + LangChain
+# 🚀 Python + FastAPI + JWT Auth + AI Agent + Groq + LangChain
 
-A production-style AI Agent API built with FastAPI, featuring JWT authentication, Groq-powered LLMs, and LangChain agent orchestration.
+A production-style AI Agent API built with **FastAPI**, featuring **JWT authentication**, **Groq-powered LLMs**, and a **LangChain ReAct agent** with tool usage (Wikipedia).
 
-This project demonstrates how to build a tool-using AI agent that can reason, take actions, and fetch real-world information (via Wikipedia) before generating responses.
+This project demonstrates how to build a tool-using AI system that can:
+- 🧠 Reason about user intent
+- 🌐 Use external tools when needed
+- 💬 Respond directly for conversational and creative tasks
 
 ---
 
 ## 📌 Project Info
 
-- Version: 0.0.2  
-- Python: 3.12  
-- Last Updated 07-06-2026  
+- 📦 Version: 0.0.2
+- 🐍 Python: 3.12
+- 📅 Last Updated: 08-06-2026
 
 ---
 
 ## ✨ Features
 
-### 🔐 Authentication
-- JWT-based authentication (HS256)
-- Secure protected endpoints
-- Token expiration handling
-- Environment-based credentials
+### 🔐 Authentication (JWT)
+- Secure login system using JWT (HS256)
+- Protected endpoints with Bearer token
+- Token expiration support
+- Environment-based credentials (.env)
 
 ---
 
-### 🤖 AI Agent (LangChain)
-- ReAct agent (Reasoning + Acting loop)
-- Multi-step reasoning with tool usage
-- Controlled iteration limits for safety
-- Robust parsing error handling
+### 🤖 AI Agent (LangChain ReAct)
+
+- 🧠 Reasoning + Acting loop (ReAct pattern)
+- 🔁 Multi-step decision making
+- 🎯 Smart tool selection (Wikipedia only when needed)
+- 🛑 Controlled iterations (prevents infinite loops)
+- 🧯 Parsing error handling for stability
 
 ---
 
 ### 🧠 LLM Integration (Groq)
-- Model: llama-3.3-70b-versatile
-- Fast inference via Groq API
-- Deterministic responses (temperature = 0)
+
+- ⚡ Model: `llama-3.3-70b-versatile`
+- 🚀 Ultra-fast inference via Groq API
+- 🎛️ Deterministic outputs (`temperature = 0`)
 
 ---
 
-### 🌐 Tool Integration (Wikipedia)
-- Safe Wikipedia API wrapper via LangChain
-- Top-K search results for better context
-- Graceful fallback when API fails
-- Automatic fallback to LLM knowledge
+### 🌐 Wikipedia Tool
+
+- 📚 Wikipedia API integration via custom wrapper
+- 🔎 Factual knowledge retrieval
+- 🔁 Retry support for transient API failures
+- 🧯 Graceful fallback on errors
+- 🧠 Used only for factual queries
 
 ---
 
 ### 🧩 Agent Capabilities
-- Answers general knowledge questions
-- Uses Wikipedia when factual lookup is needed
-- Combines reasoning + external tools
-- Produces structured final answers
+
+- ❓ General question answering
+- 📚 Factual lookup (Wikipedia)
+- 💬 Conversational chat
+- 😂 Joke generation
+- ✍️ Creative writing (poems, stories)
+- 🧠 Tool-augmented reasoning
 
 ---
 
@@ -59,36 +70,34 @@ This project demonstrates how to build a tool-using AI agent that can reason, ta
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | /login | Get JWT token |
-| POST | /chat | Chat with AI agent (protected) |
-| GET | /health | Service health check |
-| GET | /test-groq | Test LLM connection |
-| GET | /test-wikipedia | Test Wikipedia tool |
+| 🔐 POST | `/login` | Get JWT token |
+| 💬 POST | `/chat` | Chat with AI agent (protected) |
+| ❤️ GET | `/health` | Service health check |
+| 🧠 GET | `/test-groq` | Test LLM connection |
+| 🌐 GET | `/test-wikipedia` | Test Wikipedia tool |
 
 ---
 
 ## ⚙️ Getting Started
 
-### 1. Clone Repository
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+### 1️⃣ Clone Repository
+
+Clone the project from GitHub and enter the project directory.
 
 ---
 
-### 2. Create Virtual Environment
-python -m venv venv
-
-Activate:
+### 2️⃣ Create Virtual Environment
 
 Windows:
 venv\Scripts\activate
 
-Mac/Linux:
+Linux / macOS:
 source venv/bin/activate
 
 ---
 
-### 3. Install Dependencies
+### 3️⃣ Install Dependencies
+
 pip install -r requirements.txt
 
 ---
@@ -102,17 +111,21 @@ GROQ_API_KEY=your_groq_api_key
 FAKE_USERNAME=admin
 FAKE_PASSWORD=password
 
-Optional key generation:
-python -c import secrets; print(secrets.token_hex(32))
+Generate a secure key:
+
+python -c "import secrets; print(secrets.token_hex(32))"
 
 ---
 
-## ▶️ Run Application
+## ▶️ Run the Application
 
 uvicorn main:app --reload
 
-API: http://127.0.0.1:8000  
-Docs: http://127.0.0.1:8000/docs  
+App:
+http://127.0.0.1:8000
+
+Docs:
+http://127.0.0.1:8000/docs
 
 ---
 
@@ -120,7 +133,7 @@ Docs: http://127.0.0.1:8000/docs
 
 1. Call `/login`
 2. Receive JWT token
-3. Use in request header:
+3. Use token in requests:
 
 Authorization: Bearer YOUR_TOKEN
 
@@ -128,38 +141,39 @@ Authorization: Bearer YOUR_TOKEN
 
 ## 🧠 How the Agent Works
 
-User question  
-→ ReAct Agent decides  
-→ Tool usage (Wikipedia if needed)  
-→ Observation  
-→ Loop until solved  
-→ Final answer from LLM  
+User Input
+↓
+Agent Reasoning
+↓
+Wikipedia Tool (if needed)
+↓
+Direct Response (jokes, chat, creative writing)
+↓
+Final Answer
 
 ---
 
-## 🧩 Architecture
+## 🏗️ Architecture
 
 LLM:
-Groq llama-3.3-70b-versatile
+Groq - llama-3.3-70b-versatile
 
-Agent Type:
-ReAct (Reasoning + Acting)
+Agent:
+LangChain ReAct Agent
 
 Tools:
-Wikipedia via LangChain API
+Wikipedia API
 
-Execution Control:
-Max iterations: 5
-Error handling enabled
+Execution Settings:
+Max iterations: 2
+Parsing error handling enabled
 Verbose logging enabled
 
 ---
 
-## 💬 Example Request / Response
+## 💬 Example Requests
 
-POST /chat
-
-Request (Will most likely just use LLM):
+### 😂 Joke Request
 
 {
   "message": "Tell me a joke"
@@ -168,10 +182,12 @@ Request (Will most likely just use LLM):
 Response:
 
 {
-  "response": "Why don't scientists trust atoms? Because they make up everything."
+  "response": "Here's one: Why couldn't the bicycle stand up by itself? Because it was two-tired."
 }
 
-Request (Will most likely just use LLM):
+---
+
+### 📚 Factual Question
 
 {
   "message": "What is the capital of France?"
@@ -183,44 +199,63 @@ Response:
   "response": "Paris"
 }
 
-Request (Will most likely try to use the Wikipedia Tool):
+---
+
+### ✍️ Creative Request
 
 {
-  "message": "What is Python?"
+  "message": "Write a short poem"
 }
 
 Response:
 
 {
-  "response": "Python is a high-level, interpreted programming language widely used for web development, scientific computing, and data analysis."
+  "response": "The sun sets slow and paints the sky..."
+}
+
+---
+
+### 🌐 Wikipedia Tool Usage
+
+{
+  "message": "Who is Albert Einstein?"
+}
+
+Response:
+
+{
+  "response": "Albert Einstein was a theoretical physicist known for the theory of relativity."
 }
 
 ---
 
 ## 📌 Use Cases
 
-- AI assistants
-- Knowledge-based chat systems
-- Tool-augmented LLM agents
-- Education and demos
+- 🤖 AI assistants
+- 🎓 Educational tools
+- 🧪 LangChain experimentation
+- 🧠 Tool-augmented LLM systems
+- ⚡ FastAPI backend AI services
 
 ---
 
 ## 🚧 Limitations
 
-- Only Wikipedia as external tool
-- No memory (stateless)
-- Demo authentication only
+- 📚 Only Wikipedia as external tool
+- 🧠 No long-term memory
+- 🔐 Demo authentication system
+- 🌐 Limited external knowledge sources
 
 ---
 
 ## 🚀 Future Improvements
 
-- Add memory (conversation history)
-- Add more tools (search, APIs)
-- Multi-user authentication
-- Token refresh system
-- Modular project structure
+- 🧠 Conversation memory
+- 🔌 More tools (search, APIs, DB integration)
+- 👥 Multi-user system
+- 🔄 Token refresh system
+- 🧩 Modular tool registry
+- 📊 Analytics dashboard
 
 ---
 
@@ -230,6 +265,14 @@ MIT License
 
 ---
 
-## 🙌 Final Notes
+## 🙌 Summary
 
-This project combines FastAPI, JWT authentication, Groq LLMs, and LangChain agents into a working tool-using AI system.
+This project combines:
+
+⚡ FastAPI  
+🔐 JWT Authentication  
+🧠 Groq LLM (Llama 3.3 70B)  
+🤖 LangChain ReAct Agent  
+🌐 Wikipedia Tool  
+
+to build a **working tool-augmented AI system** that can reason, act, and respond intelligently depending on user intent.
