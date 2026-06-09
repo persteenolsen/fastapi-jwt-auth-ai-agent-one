@@ -13,7 +13,7 @@ This project demonstrates how to build a tool-using AI system that can:
 
 - 📦 Version: 0.0.2
 - 🐍 Python: 3.12
-- 📅 Last Updated: 08-06-2026
+- 📅 Last Updated: 09-06-2026
 
 ---
 
