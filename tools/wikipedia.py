@@ -1,79 +1,141 @@
 import logging
 import traceback
 import urllib.parse
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
+
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
 
 session = requests.Session()
-
-retry_strategy = Retry(
-    total=5,
-    backoff_factor=1,
-    status_forcelist=[429, 500, 502, 503, 504],
-    allowed_methods=["GET"]
-)
-
-adapter = HTTPAdapter(max_retries=retry_strategy)
-session.mount("https://", adapter)
-session.mount("http://", adapter)
-
-
-# ✅ FIXED USER AGENT (demo-friendly, no email)
 session.headers.update({
-    "User-Agent": "FastAPI-Wikipedia-Demo/1.0",
-    "Accept": "application/json",
+    "User-Agent": "FastAPI-Wikipedia-Stable-Agent/1.0",
+    "Accept": "application/json"
 })
 
-def wikipedia_tool(query: str) -> Dict[str, Any]:
+
+# ------------------------------
+# FETCH PAGE SUMMARY
+# ------------------------------
+def _fetch_page(title: str) -> Optional[Dict[str, Any]]:
     try:
-        # SEARCH
+        safe_title = urllib.parse.quote(title.replace(" ", "_"))
+        url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{safe_title}"
+
+        r = session.get(url, timeout=10)
+        if r.status_code != 200:
+            return None
+
+        data = r.json()
+        extract = data.get("extract", "")
+
+        if not extract or len(extract) < 40:
+            return None
+
+        return {
+            "title": data.get("title", ""),
+            "content": extract
+        }
+
+    except Exception:
+        logger.error(traceback.format_exc())
+        return None
+
+
+# ------------------------------
+# SEARCH WIKIPEDIA
+# ------------------------------
+def _search(query: str) -> List[str]:
+    try:
         r = session.get(
             "https://en.wikipedia.org/w/api.php",
             params={
                 "action": "query",
                 "list": "search",
                 "srsearch": query,
+                "srlimit": 5,
                 "format": "json"
             },
             timeout=10
         )
+
         r.raise_for_status()
 
         results = r.json().get("query", {}).get("search", [])
-        if not results:
-            return {"success": False, "content": "No results found"}
+        return [r["title"] for r in results]
 
-        title = results[0]["title"]
-        safe_title = urllib.parse.quote(title.replace(" ", "_"))
+    except Exception:
+        logger.error(traceback.format_exc())
+        return []
 
-        # SUMMARY
-        summary = session.get(
-            f"https://en.wikipedia.org/api/rest_v1/page/summary/{safe_title}",
-            timeout=10
-        )
-        summary.raise_for_status()
 
-        data = summary.json()
-        extract = data.get("extract", "")
+# ------------------------------
+# SIMPLE SCORING (KEY FIX)
+# ------------------------------
+def _score(query: str, title: str, text: str) -> int:
+    q_words = set(query.lower().split())
 
-        if not extract or len(extract) < 20:
-            return {"success": False, "content": "Empty extract"}
+    content = (title + " " + text).lower()
+    return sum(1 for w in q_words if w in content)
+
+
+# ------------------------------
+# MAIN TOOL
+# ------------------------------
+def wikipedia_tool(query: str) -> Dict[str, Any]:
+    try:
+        query = query.strip()
+
+        # 1. direct lookup first (fast path)
+        direct = _fetch_page(query)
+        if direct:
+            return {
+                "success": True,
+                "source": "wikipedia",
+                "title": direct["title"],
+                "content": direct["content"]
+            }
+
+        # 2. search fallback
+        candidates = _search(query)
+
+        if not candidates:
+            return {
+                "success": False,
+                "content": "No Wikipedia result found"
+            }
+
+        # 3. rank candidates (IMPORTANT FIX)
+        best_result = None
+        best_score = -1
+
+        for title in candidates:
+            page = _fetch_page(title)
+            if not page:
+                continue
+
+            score = _score(query, page["title"], page["content"])
+
+            if score > best_score:
+                best_score = score
+                best_result = page
+
+        if best_result:
+            return {
+                "success": True,
+                "source": "wikipedia",
+                "title": best_result["title"],
+                "content": best_result["content"]
+            }
 
         return {
-            "success": True,
-            "source": "wikipedia",
-            "title": title,
-            "content": extract
+            "success": False,
+            "content": "No relevant Wikipedia match found"
         }
 
-    except requests.exceptions.RequestException as e:
-        logger.warning(f"Wikipedia request failed: {e}")
-        return {"success": False, "content": str(e)}
-
-    except Exception as e:
+    except Exception:
         logger.error(traceback.format_exc())
-        return {"success": False, "content": str(e)}
+        return {
+            "success": False,
+            "content": "Wikipedia tool error"
+        }

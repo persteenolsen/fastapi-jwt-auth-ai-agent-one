@@ -1,8 +1,9 @@
 # 🚀 FastAPI with JWT Auth serving a LangChain ReAct AI Agent
- 
-A production-style AI Agent API built with **FastAPI**, featuring **JWT authentication**, **Groq-powered LLMs**, and a **LangChain ReAct agent** with tool usage (Wikipedia).
 
-This project demonstrates how to build a tool-using AI system that can:
+A production-style AI Agent API built with **FastAPI**, featuring **JWT authentication**, **Groq-powered LLMs**, and a **ReAct-style tool-using agent** with Wikipedia integration.
+
+This project demonstrates how to build a tool-augmented AI system that can:
+
 - 🧠 Reason about user intent
 - 🌐 Use external tools when needed
 - 💬 Respond directly for conversational and creative tasks
@@ -13,13 +14,14 @@ This project demonstrates how to build a tool-using AI system that can:
 
 - 📦 Version: 0.0.2
 - 🐍 Python: 3.12
-- 📅 Last Updated: 24-06-2026
+- 📅 Last Updated: 27-06-2026
 
 ---
 
 ## ✨ Features
 
 ### 🔐 Authentication (JWT)
+
 - Secure login system using JWT (HS256)
 - Protected endpoints with Bearer token
 - Token expiration support
@@ -27,31 +29,30 @@ This project demonstrates how to build a tool-using AI system that can:
 
 ---
 
-### 🤖 AI Agent (LangChain ReAct)
+### 🤖 AI Agent (ReAct-style reasoning)
 
-- 🧠 Reasoning + Acting loop (ReAct pattern)
-- 🔁 Multi-step decision making
+- 🧠 Reasoning + Acting loop
+- 🔁 Step-based decision making (router → tool → answer)
 - 🎯 Smart tool selection (Wikipedia only when needed)
-- 🛑 Controlled iterations (prevents infinite loops)
-- 🧯 Parsing error handling for stability
+- 🧯 Robust error handling
+- 🪵 Full trace logging of agent steps
 
 ---
 
 ### 🧠 LLM Integration (Groq)
 
-- ⚡ Model: `llama-3.3-70b-versatile`
-- 🚀 Ultra-fast inference via Groq API
-- 🎛️ Deterministic outputs (`temperature = 0`)
+- ⚡ Model: openai/gpt-oss-20b
+- 🚀 High-speed inference via Groq API
+- 🎛️ Deterministic outputs (temperature = 0)
 
 ---
 
 ### 🌐 Wikipedia Tool
 
-- 📚 Wikipedia API integration via custom wrapper
-- 🔎 Factual knowledge retrieval
-- 🔁 Retry support for transient API failures
-- 🧯 Graceful fallback on errors
-- 🧠 Used only for factual queries
+- 📚 Wikipedia REST API integration
+- 🔎 Direct page lookup + search fallback
+- 📊 Simple relevance scoring for best match selection
+- 🧯 Graceful error handling and safe fallbacks
 
 ---
 
@@ -70,11 +71,11 @@ This project demonstrates how to build a tool-using AI system that can:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| 🔐 POST | `/login` | Get JWT token |
-| 💬 POST | `/chat` | Chat with AI agent (protected) |
-| ❤️ GET | `/health` | Service health check |
-| 🧠 GET | `/test-groq` | Test LLM connection |
-| 🌐 GET | `/test-wikipedia` | Test Wikipedia tool |
+| 🔐 POST | /login | Get JWT token |
+| 💬 POST | /chat | Chat with AI agent (protected) |
+| ❤️ GET | /health | Service health check |
+| 🧠 GET | /test-groq | Test LLM connection |
+| 🌐 GET | /test-wikipedia | Test Wikipedia tool |
 
 ---
 
@@ -82,7 +83,7 @@ This project demonstrates how to build a tool-using AI system that can:
 
 ### 1️⃣ Clone Repository
 
-Clone the project from GitHub and enter the project directory.
+Clone the project and enter the directory.
 
 ---
 
@@ -113,7 +114,7 @@ FAKE_PASSWORD=password
 
 Generate a secure key:
 
-python -c "import secrets; print(secrets.token_hex(32))"
+python -c import secrets; print(secrets.token_hex(32))
 
 ---
 
@@ -131,7 +132,7 @@ http://127.0.0.1:8000/docs
 
 ## 🔐 Authentication Flow
 
-1. Call `/login`
+1. Call /login
 2. Receive JWT token
 3. Use token in requests:
 
@@ -143,31 +144,40 @@ Authorization: Bearer YOUR_TOKEN
 
 User Input
 ↓
-Agent Reasoning
+Router decides: wikipedia or none
 ↓
-Wikipedia Tool (if needed)
+If needed → Wikipedia tool
 ↓
-Direct Response (jokes, chat, creative writing)
+Otherwise → direct LLM response
 ↓
-Final Answer
+Final answer generation
 
 ---
 
 ## 🏗️ Architecture
 
 LLM:
-Groq - llama-3.3-70b-versatile
+Groq - openai/gpt-oss-20b
 
 Agent:
-LangChain ReAct Agent
+Custom ReAct-style loop (router + tool execution + final answer)
 
 Tools:
-Wikipedia API
+Wikipedia REST API
 
 Execution Settings:
-Max iterations: 2
-Parsing error handling enabled
-Verbose logging enabled
+- Max tool usage: 1 per request
+- Temperature: 0
+- Structured trace logging enabled
+
+---
+
+## 🌐 Wikipedia Tool Flow
+
+1. Try direct page lookup
+2. If not found → search API
+3. Score candidates based on keyword overlap
+4. Fetch best matching summary
 
 ---
 
@@ -180,9 +190,8 @@ Verbose logging enabled
 }
 
 Response:
-
 {
-  "response": "Here's one: Why couldn't the bicycle stand up by itself? Because it was two-tired."
+  "response": "Thought: I need to decide if I should use a tool.\nAction: None\nObservation: No tool needed\nThought: I will answer directly.\nFinal Answer: Sure! Here’s a quick one:\n\n**Why don’t scientists trust atoms?**\n\nBecause they make up everything!"
 }
 
 ---
@@ -196,7 +205,7 @@ Response:
 Response:
 
 {
-  "response": "Paris"
+  "response": "Thought: I need to decide if I should use a tool.\nAction: Wikipedia\nAction Input: What is the capital of France?\nObservation: A capital city, or just capital, is the municipality holding primary status in a country, state, province, department, or other subnational division, usually as its seat of government. A capital is typically a city that physically encompasses the government's offices and meeting places; the status as capital is often designated by law or a constitution. In some jurisdictions, including several countries, different branches of government are in different settlements, sometimes meaning there are multiple official capitals. In some cases, a distinction is made between the official (constitutional) capital and the seat of government.\nThought: I now have enough information to answer.\nFinal Answer: The capital of France is **Paris**."
 }
 
 ---
@@ -204,13 +213,13 @@ Response:
 ### ✍️ Creative Request
 
 {
-  "message": "Write a short poem"
+  "message": "Write me a short poem"
 }
 
 Response:
 
 {
-  "response": "The sun sets slow and paints the sky..."
+  "response": "Thought: I need to decide if I should use a tool.\nAction: None\nObservation: No tool needed\nThought: I will answer directly.\nFinal Answer: Here’s a quick little poem for you:\n\nIn the hush of dawn’s first light,  \nA single feather takes its flight.  \nIt drifts on wind, a quiet song,  \nReminding us that we belong."
 }
 
 ---
@@ -218,14 +227,15 @@ Response:
 ### 🌐 Wikipedia Tool Usage
 
 {
-  "message": "Who is Albert Einstein?"
+  "message": "What is Python?"
 }
 
-Response:
+Response: 
 
 {
-  "response": "Albert Einstein was a theoretical physicist known for the theory of relativity."
+  "response": "Thought: I need to decide if I should use a tool.\nAction: Wikipedia\nAction Input: What is Python?\nObservation: Python is a high-level, general-purpose programming language that emphasizes code readability, simplicity, and ease-of-writing with the use of significant indentation, an extensive (\"batteries-included\") standard library, and garbage collection. Python supports multiple programming paradigms but with an emphasis on object-oriented programming and dynamic typing.\nThought: I now have enough information to answer.\nFinal Answer: Python is a high‑level, general‑purpose programming language known for its readable syntax, use of significant indentation, and a rich standard library that follows the “batteries‑included” philosophy. It supports multiple programming paradigms—especially object‑oriented and dynamic typing—and includes automatic garbage collection."
 }
+
 
 ---
 
@@ -233,9 +243,9 @@ Response:
 
 - 🤖 AI assistants
 - 🎓 Educational tools
-- 🧪 LangChain experimentation
+- 🧪 LangChain-style agent experimentation
 - 🧠 Tool-augmented LLM systems
-- ⚡ FastAPI backend AI services
+- ⚡ FastAPI AI backends
 
 ---
 
@@ -251,11 +261,10 @@ Response:
 ## 🚀 Future Improvements
 
 - 🧠 Conversation memory
-- 🔌 More tools (search, APIs, DB integration)
+- 🔌 Additional tools (search, databases, APIs)
 - 👥 Multi-user system
-- 🔄 Token refresh system
-- 🧩 Modular tool registry
-- 📊 Analytics dashboard
+- 🔄 Token refresh mechanism
+- 📊 Observability dashboard
 
 ---
 
@@ -271,8 +280,8 @@ This project combines:
 
 ⚡ FastAPI  
 🔐 JWT Authentication  
-🧠 Groq LLM (Llama 3.3 70B)  
-🤖 LangChain ReAct Agent  
+🧠 Groq LLM (openai/gpt-oss-20b)  
+🤖 ReAct-style AI Agent  
 🌐 Wikipedia Tool  
 
-to build a **working tool-augmented AI system** that can reason, act, and respond intelligently depending on user intent.
+into a lightweight but extensible tool-augmented AI system capable of reasoning, acting, and responding dynamically based on user intent.

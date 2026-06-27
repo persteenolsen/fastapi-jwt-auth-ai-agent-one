@@ -4,7 +4,7 @@ from config import logger
 
 app = FastAPI(
     title="FastAPI with JWT Auth serving a LangChain ReAct AI Agent",
-    description="24-06-2026 - FastAPI with JWT Auth serving a LangChain ReAct AI Agent, built using LangChain and Groq LLM. Includes a Wikipedia tool for factual queries and supports intelligent tool-augmented responses",
+    description="27-06-2026 - FastAPI with JWT Auth serving a LangChain ReAct AI Agent, built using LangChain and Groq LLM. Includes a Wikipedia tool for factual queries and supports intelligent tool-augmented responses",
     version="0.0.3", 
     contact={
         "name": "Per Olsen",

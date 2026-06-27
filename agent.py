@@ -1,114 +1,82 @@
 import logging
 from langchain_groq import ChatGroq
-from langchain.agents import create_react_agent, AgentExecutor, Tool
-from langchain_core.prompts import PromptTemplate
-
 from config import GROQ_API_KEY
-from tools.wikipedia import wikipedia_tool as wiki_func
+from tools.wikipedia import wikipedia_tool
 
 logger = logging.getLogger(__name__)
 
-# ------------------------------
-# LLM
-# ------------------------------
 llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
+    model="openai/gpt-oss-20b",
     temperature=0,
     api_key=GROQ_API_KEY
 )
 
-# ------------------------------
-# Tools
-# ------------------------------
-tools = [
-    Tool(
-        name="Wikipedia",
-        func=wiki_func,
-        description="Use ONLY for factual questions that require encyclopedic knowledge."
-    )
-]
+# -----------------------------
+# ROUTER (safe decision only)
+# -----------------------------
+def route(query: str) -> str:
+    prompt = f"""
+Answer only:
+wikipedia or none
 
-# ------------------------------
-# Improved Prompt (FIXED ReAct behavior)
-# ------------------------------
-prompt = PromptTemplate.from_template("""
-You are a helpful assistant.
+Question: {query}
+"""
+    return llm.invoke(prompt).content.strip().lower()
 
-You have access to tools, but you must use them carefully.
 
-AVAILABLE TOOLS:
-{tools}
+# -----------------------------
+# FINAL ANSWER
+# -----------------------------
+def answer(query: str, context: str = "") -> str:
+    prompt = f"""
+Answer the question clearly.
 
-TOOL NAMES:
-{tool_names}
+Question: {query}
 
-CRITICAL RULES:
-- Use the Wikipedia tool ONLY for factual questions (definitions, history, explanations).
-- If the user asks for jokes, greetings, opinions, or creative writing:
-  → DO NOT use any tool
-  → Respond directly with Final Answer
-- NEVER output "Action: None"
-- NEVER attempt to call a tool if it is not needed
+Context:
+{context}
+"""
+    return llm.invoke(prompt).content.strip()
 
-DECISION RULE:
-- If tool is needed → follow tool format
-- If tool is NOT needed → go directly to Final Answer
 
----
-
-FORMAT (ONLY when using a tool):
-
-Question: {input}
-Thought: I need to use a tool
-Action: Wikipedia
-Action Input: the user question
-Observation: result
-Final Answer: response
-
----
-
-FORMAT (when NOT using a tool):
-
-Question: {input}
-Thought: no tool is needed
-Final Answer: direct response
-
----
-
-Question: {input}
-
-{agent_scratchpad}
-""")
-
-# ------------------------------
-# Agent
-# ------------------------------
-agent = create_react_agent(
-    llm=llm,
-    tools=tools,
-    prompt=prompt
-)
-
-agent_executor = AgentExecutor(
-    agent=agent,
-    tools=tools,
-    verbose=True,
-    max_iterations=2,
-    early_stopping_method="force",
-    handle_parsing_errors=True
-)
-
-# ------------------------------
-# Wrapper
-# ------------------------------
+# -----------------------------
+# REACT STYLE AGENT (SAFE VERSION)
+# -----------------------------
 def run_agent(query: str):
     try:
-        result = agent_executor.invoke({"input": query})
+        trace = []
 
-        output = result.get("output") if isinstance(result, dict) else str(result)
+        # -------- THOUGHT (simulated) --------
+        trace.append(f"Thought: I need to decide if I should use a tool.")
 
-        return {"response": output}
+        decision = route(query)
+
+        if decision == "wikipedia":
+            trace.append("Action: Wikipedia")
+            trace.append(f"Action Input: {query}")
+
+            observation = wikipedia_tool(query)
+            content = observation.get("content", "")
+
+            trace.append(f"Observation: {content}")
+
+            trace.append("Thought: I now have enough information to answer.")
+            final = answer(query, content)
+
+        else:
+            trace.append("Action: None")
+            trace.append("Observation: No tool needed")
+
+            trace.append("Thought: I will answer directly.")
+            final = answer(query)
+
+        trace.append(f"Final Answer: {final}")
+
+        # IMPORTANT: return as ONE string (like real ReAct demos)
+        return {
+            "response": "\n".join(trace)
+        }
 
     except Exception as e:
-        logger.error(f"Agent error: {e}")
-        return {"response": f"Agent error: {str(e)}"}
+        logger.exception("Agent error")
+        return {"response": str(e)}
