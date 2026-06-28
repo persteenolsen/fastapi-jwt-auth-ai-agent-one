@@ -40,20 +40,24 @@ Context:
 
 
 # -----------------------------
-# REACT STYLE AGENT (SAFE VERSION)
+# REACT STYLE AGENT
 # -----------------------------
 def run_agent(query: str):
     try:
         trace = []
 
-        # -------- THOUGHT (simulated) --------
-        trace.append(f"Thought: I need to decide if I should use a tool.")
+        # -------- THOUGHT --------
+        thought = "I need to decide if I should use a tool."
+        trace.append(f"Thought: {thought}")
 
         decision = route(query)
 
         if decision == "wikipedia":
-            trace.append("Action: Wikipedia")
-            trace.append(f"Action Input: {query}")
+            action = "Wikipedia"
+            action_input = query
+
+            trace.append(f"Action: {action}")
+            trace.append(f"Action Input: {action_input}")
 
             observation = wikipedia_tool(query)
             content = observation.get("content", "")
@@ -64,6 +68,12 @@ def run_agent(query: str):
             final = answer(query, content)
 
         else:
+            action = "Direct"
+            action_input = ""
+
+            # FIX: ensure variable always exists
+            content = "No tool needed"
+
             trace.append("Action: None")
             trace.append("Observation: No tool needed")
 
@@ -72,11 +82,24 @@ def run_agent(query: str):
 
         trace.append(f"Final Answer: {final}")
 
-        # IMPORTANT: return as ONE string (like real ReAct demos)
         return {
-            "response": "\n".join(trace)
+            "response": {
+                "thought": thought,
+                "action": action,
+                "action_input": action_input,
+                "observation": content,
+                "final_answer": final
+            }
         }
 
     except Exception as e:
         logger.exception("Agent error")
-        return {"response": str(e)}
+        return {
+            "response": {
+                "thought": "An error occurred.",
+                "action": "Direct",
+                "action_input": None,
+                "observation": str(e),
+                "final_answer": str(e)
+            }
+        }

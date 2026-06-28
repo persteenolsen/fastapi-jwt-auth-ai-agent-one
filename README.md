@@ -14,7 +14,7 @@ This project demonstrates how to build a tool-augmented AI system that can:
 
 - 📦 Version: 0.0.2
 - 🐍 Python: 3.12
-- 📅 Last Updated: 27-06-2026
+- 📅 Last Updated: 28-06-2026
 
 ---
 
@@ -190,13 +190,20 @@ Execution Settings:
 }
 
 Response:
+
 {
-  "response": "Thought: I need to decide if I should use a tool.\nAction: None\nObservation: No tool needed\nThought: I will answer directly.\nFinal Answer: Sure! Here’s a quick one:\n\n**Why don’t scientists trust atoms?**\n\nBecause they make up everything!"
+  "response": {
+    "thought": "I need to decide if I should use a tool.",
+    "action": "Direct",
+    "action_input": "",
+    "observation": "No tool needed",
+    "final_answer": "Sure! Here’s a quick one:\n\n**Why don’t scientists trust atoms?**\n\nBecause they make up everything!"
+  }
 }
 
 ---
 
-### 📚 Factual Question
+### 🌐 Factual Question using Wikipedia Tool
 
 {
   "message": "What is the capital of France?"
@@ -205,7 +212,13 @@ Response:
 Response:
 
 {
-  "response": "Thought: I need to decide if I should use a tool.\nAction: Wikipedia\nAction Input: What is the capital of France?\nObservation: A capital city, or just capital, is the municipality holding primary status in a country, state, province, department, or other subnational division, usually as its seat of government. A capital is typically a city that physically encompasses the government's offices and meeting places; the status as capital is often designated by law or a constitution. In some jurisdictions, including several countries, different branches of government are in different settlements, sometimes meaning there are multiple official capitals. In some cases, a distinction is made between the official (constitutional) capital and the seat of government.\nThought: I now have enough information to answer.\nFinal Answer: The capital of France is **Paris**."
+  "response": {
+    "thought": "I need to decide if I should use a tool.",
+    "action": "Wikipedia",
+    "action_input": "What is the capital of France?",
+    "observation": "A capital city, or just capital, is the municipality holding primary status in a country, state, province, department, or other subnational division, usually as its seat of government. A capital is typically a city that physically encompasses the government's offices and meeting places; the status as capital is often designated by law or a constitution. In some jurisdictions, including several countries, different branches of government are in different settlements, sometimes meaning there are multiple official capitals. In some cases, a distinction is made between the official (constitutional) capital and the seat of government.",
+    "final_answer": "The capital of France is **Paris**."
+  }
 }
 
 ---
@@ -219,23 +232,14 @@ Response:
 Response:
 
 {
-  "response": "Thought: I need to decide if I should use a tool.\nAction: None\nObservation: No tool needed\nThought: I will answer directly.\nFinal Answer: Here’s a quick little poem for you:\n\nIn the hush of dawn’s first light,  \nA single feather takes its flight.  \nIt drifts on wind, a quiet song,  \nReminding us that we belong."
+  "response": {
+    "thought": "I need to decide if I should use a tool.",
+    "action": "Direct",
+    "action_input": "",
+    "observation": "No tool needed",
+    "final_answer": "Beneath the quiet moon’s soft glow,  \nI hear the wind in whispers low,  \nIts song a thread of silver light,  \nWeaving dreams through the night."
+  }
 }
-
----
-
-### 🌐 Wikipedia Tool Usage
-
-{
-  "message": "What is Python?"
-}
-
-Response: 
-
-{
-  "response": "Thought: I need to decide if I should use a tool.\nAction: Wikipedia\nAction Input: What is Python?\nObservation: Python is a high-level, general-purpose programming language that emphasizes code readability, simplicity, and ease-of-writing with the use of significant indentation, an extensive (\"batteries-included\") standard library, and garbage collection. Python supports multiple programming paradigms but with an emphasis on object-oriented programming and dynamic typing.\nThought: I now have enough information to answer.\nFinal Answer: Python is a high‑level, general‑purpose programming language known for its readable syntax, use of significant indentation, and a rich standard library that follows the “batteries‑included” philosophy. It supports multiple programming paradigms—especially object‑oriented and dynamic typing—and includes automatic garbage collection."
-}
-
 
 ---
 
