@@ -203,10 +203,10 @@ Response:
 
 ---
 
-### 🌐 Factual Question using Wikipedia Tool
+### 🌐 Factual question using Wikipedia Tool
 
 {
-  "message": "What is the capital of France?"
+  "message": "What is Python?"
 }
 
 Response:
@@ -215,9 +215,9 @@ Response:
   "response": {
     "thought": "I need to decide if I should use a tool.",
     "action": "Wikipedia",
-    "action_input": "What is the capital of France?",
-    "observation": "A capital city, or just capital, is the municipality holding primary status in a country, state, province, department, or other subnational division, usually as its seat of government. A capital is typically a city that physically encompasses the government's offices and meeting places; the status as capital is often designated by law or a constitution. In some jurisdictions, including several countries, different branches of government are in different settlements, sometimes meaning there are multiple official capitals. In some cases, a distinction is made between the official (constitutional) capital and the seat of government.",
-    "final_answer": "The capital of France is **Paris**."
+    "action_input": "What is Python?",
+    "observation": "Python is a high-level, general-purpose programming language that emphasizes code readability, simplicity, and ease-of-writing with the use of significant indentation, an extensive (\"batteries-included\") standard library, and garbage collection. Python supports multiple programming paradigms but with an emphasis on object-oriented programming and dynamic typing.",
+    "final_answer": "Python is a high‑level, general‑purpose programming language known for its readable syntax, use of significant indentation, and a rich standard library that follows the “batteries‑included” philosophy. It supports multiple programming paradigms—especially object‑oriented and dynamic typing—and includes automatic garbage collection."
   }
 }
 
