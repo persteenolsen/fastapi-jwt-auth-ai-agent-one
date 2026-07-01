@@ -1,69 +1,100 @@
-# 🚀 FastAPI with JWT Auth serving a LangChain ReAct AI Agent
+# 🚀 FastAPI with JWT Authentication serving a LangChain ReAct AI Agent
 
-A production-style AI Agent API built with **FastAPI**, featuring **JWT authentication**, **Groq-powered LLMs**, and a **ReAct-style tool-using agent** with Wikipedia integration.
+A FastAPI API featuring JWT authentication and a Groq-powered **LangChain ReAct AI Agent** capable of reasoning about user requests and using external tools when needed.
 
-This project demonstrates how to build a tool-augmented AI system that can:
+The agent follows a classic **ReAct (Reason + Act)** workflow, deciding whether to answer directly or retrieve information from Wikipedia before generating a final response.
 
-- 🧠 Reason about user intent
-- 🌐 Use external tools when needed
-- 💬 Respond directly for conversational and creative tasks
+---
+
+# Version
+
+Local development uses **Python 3.12**.
 
 ---
 
 ## 📌 Project Info
 
-- 📦 Version: 0.0.2
-- 🐍 Python: 3.12
-- 📅 Last Updated: 28-06-2026
+- Version: 0.0.2
+- Python: 3.12
+- Architecture: LangChain ReAct Agent
+- Last Updated: 01-07-2026
 
 ---
 
-## ✨ Features
+## 🎯 Use Cases
 
-### 🔐 Authentication (JWT)
+This project can serve as the foundation for:
 
-- Secure login system using JWT (HS256)
-- Protected endpoints with Bearer token
-- Token expiration support
-- Environment-based credentials (.env)
+- 🤖 AI assistants
+- ⚡ FastAPI AI backends
+- 🧠 Tool-augmented LLM systems
+- 🧪 LangChain agent experimentation
+- 🎓 Educational projects
+- 🌐 Knowledge retrieval applications
 
 ---
 
-### 🤖 AI Agent (ReAct-style reasoning)
+## ✨ Key Features
 
-- 🧠 Reasoning + Acting loop
-- 🔁 Step-based decision making (router → tool → answer)
-- 🎯 Smart tool selection (Wikipedia only when needed)
-- 🧯 Robust error handling
-- 🪵 Full trace logging of agent steps
+### 🔐 Authentication
+
+- JWT authentication (HS256)
+- Protected `/chat` endpoint
+- Token-based authorization
+- Environment-based configuration
+
+---
+
+### 🤖 ReAct AI Agent
+
+The agent follows a simple reasoning workflow:
+
+1. **Reason** – The agent decides whether external information is required.
+2. **Act** – If needed, the Wikipedia tool retrieves relevant information.
+3. **Respond** – The LLM generates the final answer using the retrieved context.
+
+Key properties:
+
+- ReAct-style reasoning loop
+- Automatic tool selection
+- Direct responses for conversational tasks
+- Full trace logging for debugging
 
 ---
 
 ### 🧠 LLM Integration (Groq)
 
-- ⚡ Model: openai/gpt-oss-20b
-- 🚀 High-speed inference via Groq API
-- 🎛️ Deterministic outputs (temperature = 0)
+- Model: `openai/gpt-oss-20b`
+- High-speed inference through Groq
+- Temperature = 0 for deterministic behavior
+
+Used for:
+
+- Request reasoning
+- Tool selection
+- Final response generation
 
 ---
 
 ### 🌐 Wikipedia Tool
 
-- 📚 Wikipedia REST API integration
-- 🔎 Direct page lookup + search fallback
-- 📊 Simple relevance scoring for best match selection
-- 🧯 Graceful error handling and safe fallbacks
+The integrated Wikipedia tool provides factual knowledge through:
+
+- Direct page lookup
+- Search fallback
+- Simple relevance scoring
+- Graceful error handling
 
 ---
 
 ### 🧩 Agent Capabilities
 
-- ❓ General question answering
-- 📚 Factual lookup (Wikipedia)
-- 💬 Conversational chat
-- 😂 Joke generation
-- ✍️ Creative writing (poems, stories)
-- 🧠 Tool-augmented reasoning
+- General question answering
+- Wikipedia-based factual lookup
+- Conversational chat
+- Joke generation
+- Creative writing
+- Tool-assisted reasoning
 
 ---
 
@@ -71,33 +102,35 @@ This project demonstrates how to build a tool-augmented AI system that can:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| 🔐 POST | /login | Get JWT token |
-| 💬 POST | /chat | Chat with AI agent (protected) |
-| ❤️ GET | /health | Service health check |
-| 🧠 GET | /test-groq | Test LLM connection |
-| 🌐 GET | /test-wikipedia | Test Wikipedia tool |
+| POST | `/login` | Get JWT token |
+| POST | `/chat` | Chat with the AI agent |
+| GET | `/health` | Service health |
+| GET | `/test-groq` | Test LLM connection |
+| GET | `/test-wikipedia` | Test Wikipedia integration |
 
 ---
 
 ## ⚙️ Getting Started
 
-### 1️⃣ Clone Repository
+### Clone
 
-Clone the project and enter the directory.
+git clone https://github.com/your-username/your-repo.git
 
----
+cd your-repo
 
-### 2️⃣ Create Virtual Environment
+### Create Virtual Environment
+
+python -m venv venv
 
 Windows:
+
 venv\Scripts\activate
 
-Linux / macOS:
+macOS/Linux:
+
 source venv/bin/activate
 
----
-
-### 3️⃣ Install Dependencies
+### Install
 
 pip install -r requirements.txt
 
@@ -108,86 +141,98 @@ pip install -r requirements.txt
 Create a `.env` file:
 
 SECRET_KEY=your_secret_key_here
+
 GROQ_API_KEY=your_groq_api_key
+
 FAKE_USERNAME=admin
+
 FAKE_PASSWORD=password
 
-Generate a secure key:
+Generate a secret key:
 
-python -c import secrets; print(secrets.token_hex(32))
+python -c "import secrets; print(secrets.token_hex(32))"
 
 ---
 
-## ▶️ Run the Application
+## ▶️ Run
 
 uvicorn main:app --reload
 
-App:
+API:
+
 http://127.0.0.1:8000
 
-Docs:
+Swagger Docs:
+
 http://127.0.0.1:8000/docs
 
 ---
 
 ## 🔐 Authentication Flow
 
-1. Call /login
-2. Receive JWT token
-3. Use token in requests:
-
-Authorization: Bearer YOUR_TOKEN
+1. Request a JWT token from `/login`
+2. Include it in the `Authorization: Bearer <token>` header
+3. Access the protected `/chat` endpoint
 
 ---
 
 ## 🧠 How the Agent Works
 
 User Input
-↓
-Router decides: wikipedia or none
-↓
-If needed → Wikipedia tool
-↓
-Otherwise → direct LLM response
-↓
-Final answer generation
+
+→ ReAct reasoning
+
+→ Tool decision
+
+→ Wikipedia (if required)
+
+→ Final LLM response
+
+For factual questions, the agent retrieves external knowledge before responding. For conversational or creative requests, it answers directly without tool usage.
 
 ---
 
 ## 🏗️ Architecture
 
-LLM:
-Groq - openai/gpt-oss-20b
+### 🔁 ReAct Workflow
 
-Agent:
-Custom ReAct-style loop (router + tool execution + final answer)
+The agent combines reasoning and tool usage within a single ReAct loop.
 
-Tools:
-Wikipedia REST API
+The LLM is responsible for:
 
-Execution Settings:
-- Max tool usage: 1 per request
-- Temperature: 0
-- Structured trace logging enabled
+- Understanding user intent
+- Deciding whether a tool is needed
+- Generating the final response
+
+The system provides:
+
+- Wikipedia integration
+- Trace logging
+- Controlled tool execution
+- Deterministic model settings
+
+This project demonstrates a lightweight ReAct architecture built on FastAPI and LangChain.
 
 ---
 
-## 🌐 Wikipedia Tool Flow
+## 🌐 Wikipedia Retrieval Flow
 
-1. Try direct page lookup
-2. If not found → search API
-3. Score candidates based on keyword overlap
-4. Fetch best matching summary
+When factual information is required, the tool follows this process:
+
+1. Attempt direct page lookup
+2. Fall back to Wikipedia search
+3. Score search candidates
+4. Retrieve the best matching summary
 
 ---
 
 ## 💬 Example Requests
 
-### 😂 Joke Request
+### Direct Response
 
-{
-  "message": "Tell me a joke"
-}
+POST /chat
+
+{ "message": "Tell me a joke" }
 
 Response:
 
@@ -197,17 +242,17 @@ Response:
     "action": "Direct",
     "action_input": "",
     "observation": "No tool needed",
-    "final_answer": "Sure! Here’s a quick one:\n\n**Why don’t scientists trust atoms?**\n\nBecause they make up everything!"
+    "final_answer": "Why don’t scientists trust atoms? Because they make up everything!"
   }
 }
 
 ---
 
-### 🌐 Factual question using Wikipedia Tool
+### Wikipedia Lookup
 
-{
-  "message": "What is Python?"
-}
+POST /chat
+
+{ "message": "What is Python?" }
 
 Response:
 
@@ -216,18 +261,18 @@ Response:
     "thought": "I need to decide if I should use a tool.",
     "action": "Wikipedia",
     "action_input": "What is Python?",
-    "observation": "Python is a high-level, general-purpose programming language that emphasizes code readability, simplicity, and ease-of-writing with the use of significant indentation, an extensive (\"batteries-included\") standard library, and garbage collection. Python supports multiple programming paradigms but with an emphasis on object-oriented programming and dynamic typing.",
-    "final_answer": "Python is a high‑level, general‑purpose programming language known for its readable syntax, use of significant indentation, and a rich standard library that follows the “batteries‑included” philosophy. It supports multiple programming paradigms—especially object‑oriented and dynamic typing—and includes automatic garbage collection."
+    "observation": "...",
+    "final_answer": "Python is a high-level, general-purpose programming language..."
   }
 }
 
 ---
 
-### ✍️ Creative Request
+### Creative Request
 
-{
-  "message": "Write me a short poem"
-}
+POST /chat
+
+{ "message": "Write me a short poem" }
 
 Response:
 
@@ -237,55 +282,56 @@ Response:
     "action": "Direct",
     "action_input": "",
     "observation": "No tool needed",
-    "final_answer": "Beneath the quiet moon’s soft glow,  \nI hear the wind in whispers low,  \nIts song a thread of silver light,  \nWeaving dreams through the night."
+    "final_answer": "Beneath the quiet moon's soft glow..."
   }
 }
 
 ---
 
-## 📌 Use Cases
+## 🚀 Benefits
 
-- 🤖 AI assistants
-- 🎓 Educational tools
-- 🧪 LangChain-style agent experimentation
-- 🧠 Tool-augmented LLM systems
-- ⚡ FastAPI AI backends
+- Clean FastAPI architecture
+- JWT-secured API
+- LangChain ReAct workflow
+- Automatic Wikipedia retrieval
+- Easy to extend with additional tools
+- Useful for learning agent-based systems
 
 ---
 
-## 🚧 Limitations
+## 🚧 Current Limitations
 
-- 📚 Only Wikipedia as external tool
-- 🧠 No long-term memory
-- 🔐 Demo authentication system
-- 🌐 Limited external knowledge sources
+- Single external tool (Wikipedia)
+- No conversation memory
+- Stateless requests
+- Demo authentication system
 
 ---
 
 ## 🚀 Future Improvements
 
-- 🧠 Conversation memory
-- 🔌 Additional tools (search, databases, APIs)
-- 👥 Multi-user system
-- 🔄 Token refresh mechanism
-- 📊 Observability dashboard
+- Conversation memory
+- Additional external tools
+- Multi-user support
+- Token refresh
+- Observability and monitoring
+
+---
+
+## 💡 Design Philosophy
+
+> **The agent reasons first, then decides whether external knowledge is needed before responding.**
+
+This project focuses on demonstrating the ReAct pattern, where reasoning and tool usage are combined into a simple decision-making loop. It provides a practical introduction to tool-augmented AI systems while remaining easy to understand and extend.
+
+---
+
+## 🙌 Final Notes
+
+This project demonstrates how FastAPI, JWT authentication, LangChain, Groq LLMs, and Wikipedia can be combined into a lightweight ReAct-style AI agent. While intentionally simpler than a production-grade tool orchestration system, it illustrates the core concepts of reasoning, tool selection, and grounded responses.
 
 ---
 
 ## 📄 License
 
 MIT License
-
----
-
-## 🙌 Summary
-
-This project combines:
-
-⚡ FastAPI  
-🔐 JWT Authentication  
-🧠 Groq LLM (openai/gpt-oss-20b)  
-🤖 ReAct-style AI Agent  
-🌐 Wikipedia Tool  
-
-into a lightweight but extensible tool-augmented AI system capable of reasoning, acting, and responding dynamically based on user intent.
