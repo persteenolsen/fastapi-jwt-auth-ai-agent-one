@@ -3,8 +3,8 @@ from routes import router
 from config import logger
 
 app = FastAPI(
-    title="FastAPI with JWT Auth serving a ReAct-inspired AI agent system using LangChain",
-    description="01-07-2026 - FastAPI with JWT authentication serving a ReAct-inspired LLM system using LangChain and Groq, with optional Wikipedia tool access",
+    title="FastAPI with JWT Auth serving a ReAct-inspired AI agent system",
+    description="01-07-2026 - FastAPI with JWT authentication serving a ReAct-inspired LLM system, with optional Wikipedia tool access",
     version="0.0.3", 
     contact={
         "name": "Per Olsen",
