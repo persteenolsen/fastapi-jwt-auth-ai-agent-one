@@ -1,10 +1,10 @@
-# 🚀 FastAPI with JWT Authentication + ReAct-Inspired LangChain Tool-Using LLM
+# 🚀 FastAPI with JWT Authentication + Groq-Powered Tool-Using LLM
 
-A FastAPI API featuring JWT authentication and a Groq-powered **LangChain-based LLM system** that routes user queries and optionally uses a Wikipedia tool to retrieve factual information.
+A FastAPI API featuring JWT authentication and a Groq-powered LLM that routes user queries and optionally uses a Wikipedia tool to retrieve factual information.
 
-The system is **ReAct-inspired**, meaning it follows a structured *Thought → Action → Observation → Answer* style trace, but implemented in a lightweight way rather than a full multi-step agent loop.
+The system is **ReAct-inspired**, following a structured **Thought → Action → Observation → Final Answer** flow through custom Python logic rather than an agent framework.
 
-It uses LangChain’s `ChatGroq` interface for model interaction and a custom routing + tool execution flow.
+The implementation is intentionally lightweight, using only the Groq client interface for LLM calls and custom routing logic.
 
 ---
 
@@ -19,8 +19,8 @@ Local development uses **Python 3.12**.
 - Version: 0.0.2
 - Python: 3.12
 - Framework: FastAPI
-- LLM Interface: LangChain (`ChatGroq`)
-- Architecture: ReAct-inspired LLM router with tool execution
+- LLM: Groq (`ChatGroq`)
+- Architecture: ReAct-inspired router with optional tool execution
 - Last Updated: 01-07-2026
 
 ---
@@ -32,9 +32,9 @@ This project can serve as a foundation for:
 - 🤖 AI assistants with tool usage
 - ⚡ FastAPI LLM backends
 - 🧠 ReAct-inspired reasoning systems
-- 🧪 LangChain experimentation projects
+- 🧪 Lightweight AI backend experimentation
 - 🎓 Educational agent architecture demos
-- 🌐 Lightweight knowledge retrieval APIs
+- 🌐 Knowledge retrieval APIs
 
 ---
 
@@ -53,50 +53,52 @@ This project can serve as a foundation for:
 
 The system follows a simplified ReAct-style flow:
 
-1. **Thought** – The system assumes a reasoning step before acting
+1. **Thought** – Begin with a reasoning step
 2. **Action Decision** – The LLM classifies the request:
    - `wikipedia`
    - `none`
-3. **Action Execution** – If needed, Wikipedia tool is called
-4. **Observation** – Retrieved context is passed back to the model
-5. **Final Answer** – LLM generates response using available information
+3. **Action Execution** – If required, the Wikipedia tool is called
+4. **Observation** – Retrieved information is passed back to the model
+5. **Final Answer** – The LLM generates the final response
 
-Key properties:
+Key characteristics:
 
-- ReAct-inspired reasoning structure (not full iterative agent loop)
-- Single-step tool decision routing
+- ReAct-inspired reasoning structure
+- Single routing decision per request
 - Transparent execution trace
-- Deterministic behavior via temperature=0
-- LangChain-powered LLM interface
+- Deterministic responses (`temperature=0`)
+- Lightweight custom implementation
 
 ---
 
-### 🧠 LangChain Integration (Groq)
+### 🧠 LLM Integration
 
-This project uses LangChain as the LLM abstraction layer:
+The project uses Groq for inference:
 
-- `ChatGroq` from `langchain_groq`
+- Client: `ChatGroq`
 - Model: `openai/gpt-oss-20b`
-- Temperature: 0 (deterministic output)
-- API key managed via environment variables
+- Temperature: `0`
+- API key managed through environment variables
 
-Used for:
+The LLM performs two tasks:
 
-- Tool routing decision
-- Final answer generation
+- Route whether a tool is needed
+- Generate the final response
 
 ---
 
-### 🌐 Wikipedia Tool (Tool-Augmented LLM)
+### 🌐 Wikipedia Tool
 
-A lightweight Wikipedia retrieval tool provides factual grounding:
+A lightweight Wikipedia retrieval tool provides factual grounding when required.
 
-- Direct page lookup attempt
-- Search fallback mechanism
-- Basic result selection
-- Error-safe response handling
+Features include:
 
-The tool is invoked only when the LLM route decides it is needed.
+- Direct page lookup
+- Search fallback
+- Summary extraction
+- Graceful error handling
+
+The tool is only invoked when the router selects it.
 
 ---
 
@@ -114,11 +116,11 @@ The tool is invoked only when the LLM route decides it is needed.
 ## 📡 API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
+|---------|----------|-------------|
 | POST | `/login` | Get JWT access token |
-| POST | `/chat` | Chat with the ReAct-inspired LLM system |
+| POST | `/chat` | Chat with the LLM |
 | GET | `/health` | Service health check |
-| GET | `/test-groq` | Test LLM connectivity |
+| GET | `/test-groq` | Test Groq connectivity |
 | GET | `/test-wikipedia` | Test Wikipedia tool |
 
 ---
@@ -157,26 +159,29 @@ pip install -r requirements.txt
 
 Create a `.env` file:
 
-SECRET_KEY=your_secret_key_here  
-GROQ_API_KEY=your_groq_api_key  
-FAKE_USERNAME=admin  
-FAKE_PASSWORD=password  
+SECRET_KEY=your_secret_key_here
 
-Generate a secure key:
+GROQ_API_KEY=your_groq_api_key
+
+FAKE_USERNAME=admin
+
+FAKE_PASSWORD=password
+
+Generate a secure secret key:
 
 python -c "import secrets; print(secrets.token_hex(32))"
 
 ---
 
-## ▶️ Run Application
+## ▶️ Run the Application
 
 uvicorn main:app --reload
 
-API base URL:
+API:
 
 http://127.0.0.1:8000
 
-Swagger docs:
+Swagger UI:
 
 http://127.0.0.1:8000/docs
 
@@ -184,41 +189,61 @@ http://127.0.0.1:8000/docs
 
 ## 🔐 Authentication Flow
 
-1. Obtain JWT token from `/login`
-2. Include token in requests:
+1. Request a JWT token from `/login`
+2. Include it in requests:
 
-Authorization: Bearer <token>
+Authorization: Bearer `<token>`
 
-3. Access `/chat` endpoint
+3. Access the protected `/chat` endpoint
 
 ---
 
 ## 🧠 System Flow
 
-User Input  
-→ LangChain LLM (routing decision)  
-→ Optional Wikipedia tool execution  
-→ Context injection  
-→ Final LangChain LLM response  
+User Input
+
+↓
+
+LLM Router
+
+↓
+
+Tool Decision
+
+↓
+
+(Optional) Wikipedia Retrieval
+
+↓
+
+Context Injection
+
+↓
+
+Final LLM Response
 
 ---
 
 ## 🏗️ Architecture
 
-### 🔁 ReAct-Inspired Design (Simplified)
+### ReAct-Inspired Design
 
-This system is inspired by the ReAct (Reason + Act) paradigm:
+The system is inspired by the ReAct (Reason + Act) pattern while remaining intentionally simple.
 
-- The model performs an internal “thought” step
-- It decides whether a tool is needed
-- A single tool (Wikipedia) may be executed
-- The result is fed back into the LLM
-- A final response is generated
+Workflow:
 
-Unlike full ReAct agent frameworks, this implementation:
-- Does NOT use iterative tool loops
-- Does NOT use AgentExecutor or multi-step planning
-- Uses a single routing decision per request
+- Generate an initial reasoning step
+- Decide whether a tool is required
+- Execute the tool if needed
+- Feed retrieved information back into the model
+- Generate the final response
+
+Unlike full agent frameworks, this implementation:
+
+- Uses no AgentExecutor
+- Performs no iterative planning
+- Executes at most one tool per request
+- Uses straightforward Python functions instead of an orchestration framework
 
 ---
 
@@ -227,10 +252,10 @@ Unlike full ReAct agent frameworks, this implementation:
 When Wikipedia is selected:
 
 1. Attempt direct page lookup
-2. Fall back to search query
-3. Rank/select best result
+2. Fall back to search
+3. Retrieve the best result
 4. Extract summary content
-5. Pass context to LLM for final answer
+5. Use the summary as context for the final answer
 
 ---
 
@@ -238,52 +263,69 @@ When Wikipedia is selected:
 
 ### Direct Response
 
-POST /chat
+POST `/chat`
 
-{ "message": "Tell me a joke" }
+```json
+{
+  "message": "Tell me a joke"
+}
+```
 
 Response:
 
+```json
 {
   "response": {
     "thought": "I need to decide if I should use a tool.",
     "action": "Direct",
     "action_input": "",
     "observation": "No tool needed",
-    "final_answer": "Why don’t scientists trust atoms? Because they make up everything!"
+    "final_answer": "Why don't scientists trust atoms? Because they make up everything!"
   }
 }
+```
 
 ---
 
 ### Wikipedia Lookup
 
-POST /chat
+POST `/chat`
 
-{ "message": "What is Python?" }
+```json
+{
+  "message": "Who was Ada Lovelace?"
+}
+```
 
 Response:
 
+```json
 {
   "response": {
     "thought": "I need to decide if I should use a tool.",
     "action": "Wikipedia",
-    "action_input": "What is Python?",
-    "observation": "Python is a high-level programming language...",
-    "final_answer": "Python is a high-level, general-purpose programming language..."
+    "action_input": "Who was Ada Lovelace?",
+    "observation": "Ada Lovelace was an English mathematician...",
+    "final_answer": "Ada Lovelace is widely regarded as one of the first computer programmers..."
   }
 }
+```
 
 ---
 
 ### Creative Request
 
-POST /chat
+POST `/chat`
 
-{ "message": "Write me a short poem" }
+```json
+{
+  "message": "Write me a short poem"
+}
+```
 
 Response:
 
+```json
 {
   "response": {
     "thought": "I need to decide if I should use a tool.",
@@ -293,6 +335,7 @@ Response:
     "final_answer": "Beneath the quiet moon's soft glow..."
   }
 }
+```
 
 ---
 
@@ -300,53 +343,59 @@ Response:
 
 - Clean FastAPI architecture
 - JWT-secured API
-- LangChain LLM integration
-- ReAct-inspired structured reasoning trace
-- Wikipedia tool for factual grounding
+- Lightweight LLM integration
+- Transparent reasoning trace
+- Optional factual grounding with Wikipedia
 - Easy to extend with additional tools
+- Minimal dependencies
 
 ---
 
 ## 🚧 Current Limitations
 
 - Single external tool (Wikipedia)
-- No memory or conversation state
-- Stateless request handling
-- Single-step routing (not iterative agent loop)
-- Demo-level authentication system
+- No conversation memory
+- Stateless requests
+- One routing decision per request
+- Single-step execution
+- Demo authentication system
 
 ---
 
 ## 🚀 Future Improvements
 
-- Add conversation memory
-- Expand tool ecosystem
-- Multi-step ReAct agent loop (true agent upgrade)
+- Conversation memory
+- Additional tools
+- Multi-step planning
 - Streaming responses
-- Observability + tracing tools
-- Multi-user authentication system
+- Logging and observability
+- Production-ready authentication
+- Configurable routing policies
 
 ---
 
 ## 💡 Design Philosophy
 
-> This system is a lightweight, ReAct-inspired LLM router built using LangChain abstractions and a simple tool execution layer.
+> This project demonstrates a lightweight approach to tool-using LLMs using straightforward Python functions instead of a full agent framework.
 
-It prioritizes:
-- clarity over complexity
-- debuggability over autonomy
-- structured control over full agent freedom
+The design prioritizes:
+
+- Simplicity
+- Readability
+- Transparency
+- Deterministic behavior
+- Easy extensibility
 
 ---
 
 ## 🙌 Final Notes
 
-This project demonstrates how FastAPI, JWT authentication, LangChain (`ChatGroq`), and a Wikipedia tool can be combined into a **ReAct-inspired tool-using LLM system**.
+This project demonstrates how FastAPI, JWT authentication, Groq-powered language models, and a Wikipedia retrieval tool can be combined into a lightweight ReAct-inspired AI backend.
 
-It is intentionally simplified to make the core ideas of routing, tool usage, and structured reasoning easy to understand and extend.
+Rather than relying on a complex orchestration framework, the routing, tool execution, and response generation are implemented with simple Python functions, making the project easy to understand, debug, and extend.
 
 ---
 
 ## 📄 License
 
-MIT License
+MIT License.
